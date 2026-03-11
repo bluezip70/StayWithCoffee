@@ -1,232 +1,568 @@
-/* 미션 1_버튼 클릭하면 안내 메시지 출력 */
-const langBtn = document.querySelector("#lang-btn");
-langBtn.addEventListener("click", function(){
-  alert("한국어 지원만 가능합니다.");
-});
-
-// 미션 2_// 선택한 원두 표시하기
-const selectMenu = document.querySelector(".select-menu");
-selectMenu.addEventListener("change", function(){
-  const roast = selectMenu.value;
-  alert("선택하신 " + roast + " 로스트 원두는 오늘 주문하시면 내일 받아보실 수 있습니다.");
-});
-
-// 미션 5_카드 클릭하면 커피 추천
-const cards = document.querySelectorAll(".card");
-cards.forEach(function(card){
-  card.addEventListener("click", function(){
-    const name = card.querySelector("h3").innerText;
-    alert(name + "를 추천합니다");
-  });
-});
-
-
-//미션 11_푸터의 상품Q&A 매뉴 클릭 시 FAQ 섹션 이동 기능
-
-const qnaBtn = document.querySelector("#qna-btn"); 
-const faqSection = document.querySelector("#faq");
-qnaBtn.addEventListener("click", function(e){ 
-  e.preventDefault();
-  faqSection.scrollIntoView({
-    behavior: "smooth"
-  });
-});
-
-//좋아요 버튼 클릭 수
-let count = 0;
-
-const likeBtn = document.querySelector("#like");
-const result = document.querySelector("#count");
-
-likeBtn.addEventListener("click", function(){
-  count++;
-  result.innerText = count;
-});
-
-//방문자 횟주 카운트
-let vCount = localStorage.getItem("visit");
-
-if(vCount === null){
-  vCount = 0;
+/* CSS 리셋 및 기본 설정 */
+* { margin: 0; 
+  padding: 0; 
+  box-sizing: border-box;
 }
 
-vCount++;
-
-localStorage.setItem("visit", vCount);
-
-document.querySelector("#visit").innerText = vCount;
-
-/* --- 입력받은 이메일 안내 메시지 출력 --- */
-const emailForms = document.querySelectorAll(".add-email");
-
-emailForms.forEach(form => {
-  form.addEventListener("submit", function(event){
-    event.preventDefault();
-    const emailInput = this.querySelector("input");
-    const email = emailInput.value;
-
-    if(email) {
-      alert(email + " 로 구독 안내문을 보내드리겠습니다.");
-  emailInput.value = "";  // 입력창 초기화 (내용 비우기)
-    }
-  });
-});
-
-/* 1. 기본 설정 (모달 열고 닫기)
- * 2. 단순 모달 열기 (배너, 푸터 이벤트)
- * 3. 회원가입 (데이터 저장)
- * 4. 로그인 (데이터 확인)  */
-// --- 1. 기본 설정: 모달창을 열고 닫는 함수 만들기 ---
-
-// 모달을 여는 함수: id를 전달받아 해당 요소에 'active' 클래스를 추가합니다.
-const openModal = (id) => {
-  const modal = document.getElementById(id);
-  if (modal) modal.classList.add('active');
-};
-
-// 모달을 닫는 함수: 모든 모달에서 'active' 클래스를 제거하고 입력창을 비웁니다.
-const closeModal = () => {   // 모든 모달 레이어 찾아서 닫기
-  document.querySelectorAll('.modal-overlay').forEach(modal => {
-    modal.classList.remove('active');
-  });
-
-  // 입력했던 내용이나 에러 메시지 초기화하기
-  document.querySelectorAll('.modal-content input').forEach(input => input.value = '');
-  document.querySelectorAll('.error-msg').forEach(error => error.textContent = '');
-};
-
-// 모든 '닫기 버튼(X)'에 클릭 이벤트 연결하기
-document.querySelectorAll('.close-btn').forEach(btn => {
-  btn.onclick = closeModal;
-});
-
-// --- 2. 단순 모달 열기: 버튼 클릭 이벤트 ---
-
-// (1) 배너의 "자세히 알아보기" 버튼 클릭 시
-const bannerBtn = document.getElementById('banner-btn');
-if (bannerBtn) {
-  bannerBtn.onclick = () => openModal('banner-modal');
+/* ---- 전체 적용 ---- */
+body { 
+  background-color: #111;   /* 배경색 */
+  color: #fff;   /* 글자색 */
+  font-family: 'Pretendard', sans-serif; 
+}
+section { 
+  padding: 40px 10%; 
+}
+section h2 { 
+  font-size: 36px; 
+  margin-bottom: 20px; 
+}
+section h3 { 
+  font-size: 30px; 
+  font-weight: 600; 
+  margin-bottom: 20px; 
 }
 
-// (2) 푸터의 "이벤트" 메뉴 클릭 시
-const eventBtn = document.getElementById('event-btn');
-if (eventBtn) {
-  eventBtn.onclick = () => openModal('event-modal');
+/* ----  헤더 영역 ---- */
+header {
+  width: 100%;   /* 너비 100% */
+  height: 100vh; /* 뷰포트 높이 */
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(images/header-bg.jpg) center no-repeat;
+  background-size: cover; 
+  padding: 10px 8%;  /* 상하 10px, 좌우 8% */
+  position: relative; /* 상대 위치 */
+}
+nav { 
+  display: flex; /* 플렉스 박스 레이아웃 사용 */
+  justify-content: space-between;  /* 가로 정렬 */
+  align-items: center;  /* 세로 정렬 */
+  padding: 10px 0; 
+}
+nav .logo { 
+  font-size:32px;   /* 글자 크기 */
+  color: #c9adad; /* 글자색 */
+  cursor: pointer;  /* 커서 포인터 */
+  text-decoration: none; /* 밑줄, 취소선 제거 */
+  font-weight: bold;  /* 글자를 굵게 표시 */
+}  
+
+.nav-buttons { 
+  display: flex; /* 내부 요소들을 가로 방향으로 정렬하기 위해 Flexbox 레이아웃 사용 */
+  align-items: center; /* 세로 방향 기준으로 가운데 정렬 */
+  gap: 10px; /* 각 버튼 사이의 간격을 10px로 설정 */
+}
+nav button, .auth-btn {
+  border: 0;  /* 테두리 없음 */
+  outline: 0; /* 아웃라인 없음 */
+  border-radius: 5px; /* 테두리 반경 */
+  background-color: #db0001;  /* 배경색 */
+  color: #fff; /* 글자색 */
+  padding: 10px 20px; /* 안쪽 여백 */
+  margin-left: 10px;  /* 왼쪽 마진 */
+  font-size: 16px;    /* 글자 크기 */
+  cursor: pointer;    /* 커서 포인터 */
+}
+.lang { 
+  display: inline-flex; /* 인라인 플렉스 박스 레이아웃 사용 */
+  align-items: center;  /* 세로 정렬 */
+  border: 1px solid #fff; /* 테두리 */
+  background-color: transparent; /* 배경색 투명 */
+}
+.lang i:nth-child(1) {  
+  margin-right: 8px;   /* .lang 요소 안에 있는 첫 번째 i 아이콘 오른쪽에 8px 여백을 줌 */
 }
 
-// (3) 상단 네비게이션 로그인/회원가입 버튼
-const loginNavBtn = document.getElementById('login-nav-btn');
-if (loginNavBtn) {
-  loginNavBtn.onclick = () => openModal('login-modal');
+.lang i:nth-child(2) { 
+  margin-left: 5px;    /* .lang 요소 안에 있는 두 번째 i 아이콘 왼쪽에 5px 여백을 줌 */
+}
+/* 방문자 표시 */
+.visitor-box{
+  position: absolute;
+  right: 40px;
+  bottom: 30px;
+  color: #fff;
+  font-size: 14px;
+  background: rgba(0,0,0,0.4);
+  padding: 6px 12px;
+  border-radius: 5px;
+}
+/* 숫자 강조 */
+#visit{
+  font-weight: bold;
+  color: #ffd166;
 }
 
-const signupNavBtn = document.getElementById('signup-nav-btn');
-if (signupNavBtn) {
-  signupNavBtn.onclick = () => openModal('signup-modal');
+/* 로그인 후 상태 */
+#user-status { 
+  font-size: 14px; 
+  margin-right: 10px; 
+  color: #ccc; 
+}
+.hidden { 
+  display: none !important; 
 }
 
-// --- 3. 회원가입: 로컬 스토리지에 저장하기 ---
-
-const signupSubmit = document.getElementById('signup-submit');
-if (signupSubmit) {
-  signupSubmit.onclick = () => {
-
-    // 사용자가 입력한 값 가져오기
-    const id = document.getElementById('signup-id').value.trim();
-    const pw = document.getElementById('signup-pw').value;
-    const pwConfirm = document.getElementById('signup-pw-confirm').value;
-    const errorEl = document.getElementById('signup-error');
-    
-    if (!id || !pw) {     // 빈 칸 검사
-      errorEl.textContent = '아이디와 비밀번호를 입력해주세요.';
-      return;
-    }    
-    if (pw !== pwConfirm) {       // 비밀번호 확인 검사
-      errorEl.textContent = '비밀번호가 일치하지 않습니다.';
-      return;
-    }
-
-    // 로컬 스토리지에서 기존 회원 명단 가져오기 (없으면 빈 배열 [])
-    const accounts = JSON.parse(localStorage.getItem('accounts')) || [];
-    // 아이디 중복 검사
-    if (accounts.find(user => user.id === id)) {      
-      errorEl.textContent = '이미 사용 중인 아이디입니다.';
-      return;
-    }
-
-    // 새로운 회원 추가하고 저장하기
-    accounts.push({ id, pw });
-    localStorage.setItem('accounts', JSON.stringify(accounts));
-
-    alert('회원가입이 완료되었습니다! 이제 로그인해 보세요.');
-    closeModal();
-  };
-}
-
-
-// --- 4. 로그인: 저장된 정보와 비교하기 ---
-
-const loginSubmit = document.getElementById('login-submit');
-if (loginSubmit) {
-  loginSubmit.onclick = () => {
-    const id = document.getElementById('login-id').value.trim();
-    const pw = document.getElementById('login-pw').value;
-    const errorEl = document.getElementById('login-error');
-
-    // 저장된 회원 명단 가져오기
-    const accounts = JSON.parse(localStorage.getItem('accounts')) || [];
-
-    // 입력한 정보와 일치하는 회원 찾기
-    const user = accounts.find(acc => acc.id === id && acc.pw === pw);
-
-    if (user) {
-      // 로그인 성공 시: 현재 로그인한 유저 정보를 저장
-      localStorage.setItem('loggedInUser', JSON.stringify(user));
-      alert(`${user.id}님, 환영합니다!`);
-      closeModal();
-      updateUI(); // 화면 모습 바꾸기 (로그인 버튼 숨기기 등)
-    } else {
-      errorEl.textContent = '아이디 또는 비밀번호가 틀렸습니다.';
-    }
-  };
-}
-
-
-// --- 추가 기능: 로그인 상태에 따라 버튼 보여주기/숨기기 ---
-
-const updateUI = () => {
-  const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
-  const userStatus = document.getElementById('user-status');
-  const loginNavBtn = document.getElementById('login-nav-btn');
-  const signupNavBtn = document.getElementById('signup-nav-btn');
-  const logoutBtn = document.getElementById('logout-btn');
-
-  if (loggedInUser) {
-    // 로그인 된 상태
-    userStatus.textContent = `${loggedInUser.id}님 접속 중`;
-    userStatus.classList.remove('hidden');
-    logoutBtn.classList.remove('hidden');
-    loginNavBtn.classList.add('hidden');
-    signupNavBtn.classList.add('hidden');
-  } else {
-    // 로그아웃 된 상태
-    userStatus.classList.add('hidden');
-    logoutBtn.classList.add('hidden');
-    loginNavBtn.classList.remove('hidden');
-    signupNavBtn.classList.remove('hidden');
+/* ---- 반응형 (헤더)  ----- */
+@media only screen and (max-width: 768px) {
+  .logo {
+    font-size: 20px;
   }
-};
-
-// 로그아웃 버튼 클릭 시
-const logoutBtn = document.getElementById('logout-btn');
-if (logoutBtn) {
-  logoutBtn.onclick = () => {
-    localStorage.removeItem('loggedInUser');
-    alert('로그아웃 되었습니다.');
-    updateUI();
-  };
+  nav button {
+    padding: 5px 10px;
+  }
+  .lang {
+    padding: 4px 8px;
+  }
+  .header-content {
+    position: unset;   
+    transform: none;
+    padding-top: 150px;
+  }
+  .header-content h2 {
+    font-size: 48px;
+    line-height: 50px;
+  }
+  .header-content h3 {
+    font-size: 20px;
+  }
+  .add-email button {
+    font-size: 12px;
+    padding: 10px 15px;
+  }
+    .visitor-box{
+    right:20px;
+    bottom:20px;
+    font-size:12px;
+  }
 }
 
-// 페이지가 처음 열릴 때 로그인 상태 확인하기
+/* ------ 배너 영역 ------ */  
+.banner-content { 
+  border-radius: 6px; 
+  background: linear-gradient(to right, #651c3d 0%, #280a2b 60%); 
+  padding: 40px; 
+  margin-bottom: 40px; 
+}
+#banner p {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 30px;
+}
+#banner button {
+  border: 0;
+  outline: 0;
+  border-radius: 5px;
+  background: rgba(128, 128, 128, 0.4);
+  padding: 10px 20px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}    
+.select-menu {
+  border: 1px solid #fff;  /* 테두리 */
+  background-color: transparent;   /* 배경색 투명 */
+  color: #fff;
+  padding: 10px 24px;  /* 안쪽 여백 */
+  margin-top: 20px;  /* 위쪽 마진 */
+  font-size: 16px;  /* 글자 크기 */
+}
+.select-menu option {
+  background-color: #2b2b2b;  /* 배경색 */
+  color: #fff;  /* 글자색 */
+}
 
-window.onload = updateUI;
+/* ------ 멤버십 영역 ------ */
+.membership-content {
+  border-radius: 6px; 
+  background: linear-gradient(to right, rgb(101, 28, 61, 0.9) 0%, rgba(40, 10, 43, 0.5) 60%), url(images/membership-bg.png) no-repeat right center;
+  padding: 60px 40px;
+  margin-bottom: 40px;
+}
+.membership-content p {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 30px;
+}
+
+/* ----- 선택 가이드 영역 ----- */
+#choice p {
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 30px;
+}
+.choice-content { 
+  display: flex; 
+  flex-wrap: wrap; 
+  align-items: center;
+  gap: 30px; 
+}
+.card { 
+  flex: 1;
+  border: 0;
+  outline: 0;
+  border-radius: 10px;
+  background: linear-gradient(to bottom, rgba(25,32,68,1) 0%, rgba(32,19,34,1) 62%);
+  padding: 40px;
+  height: 300px;
+  position:relative;
+  transition:0.3s;  
+}
+/* 카드 hover 애니메이션 */
+.card:hover{
+transform: translateY(-10px);
+}
+.bean-img {
+  width:80px;
+  position: absolute;
+  bottom: 20px;
+  right: 10px;
+}
+.bean-img img {
+  width: 100%;
+  height: auto;
+}
+
+/* 좋아요 영역 */
+.like-box{
+  margin: 40px auto 0;
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* 좋아요 버튼 (배너 버튼과 동일 스타일) */
+#like{
+  border: 0;
+  outline: 0;
+  border-radius: 5px;
+  background: rgba(128,128,128,0.4);
+  padding: 10px 20px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+/* 버튼 hover 효과 */
+#like:hover{
+  background: rgba(128,128,128,0.6);
+}
+/* 좋아요 숫자 강조 */
+#count{
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+/* ---- 반응형 (선택 가이드 영역) ---- */
+@media only screen and (max-width: 768px) {
+  .card {
+    flex-basis: 100%;
+  }
+}
+@media only screen and (min-width: 769px) and (max-width: 1220px) {
+  .card {
+    flex-basis: calc(50% - 15px);
+  }
+}
+
+/* ----- 추천 커피 ------*/
+/* 이미지 가로 배열 */
+.coffee-content{
+  display:flex;
+  gap:30px;
+}
+
+/* 이미지 박스 */
+.coffee-item{
+  flex:1;
+  overflow:hidden;   /* 확대 시 이미지 잘림 방지 */
+  border-radius:10px;
+}
+
+/* 기본 이미지 상태 */
+.coffee-item img{
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  transition:transform 0.4s ease;
+}
+
+/* 마우스 올렸을 때 */
+.coffee-item:hover img{
+  transform:scale(1.35); 
+  transition: 0.5s ease;
+}
+
+
+
+/* ----- FAQ 영역 ----- */
+
+#faq .accordion {
+  width: 100%;
+  max-width: 750px;
+  margin: 60px auto;
+} 
+.accordion li { 
+  list-style: none;
+  width: 100%;
+  padding: 5px;
+}
+.accordion li label {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  font-size: 25px;
+  font-weight: 500;
+  background: #303030;
+  margin-bottom :2px;
+  cursor: pointer;
+  position: relative;
+}
+.accordion li label::after {
+  content: '\2b';
+  font-size: 40px;
+  position: absolute;
+  right: 20px;  
+  transition: 0.5s;
+}
+.accordion .content { 
+  background: #3b3b3b; 
+  font-size: 22px;
+  line-height: 1.6;
+  text-align: left;
+  padding: 0 20px;
+  max-height: 0;
+  overflow: hidden;
+}
+.accordion input[type="radio"] { 
+  display: none; 
+}
+/* input[type="radio"]에 체크하면 */
+.accordion input[type="radio"]:checked + label + .content { 
+  max-height: 200px; 
+  padding: 20px; 
+}
+.accordion input[type="radio"]:checked + label::after {  /* input[type="radio"]에 체크하면 */
+  transform: rotate(-135deg);
+}
+.newsletter {
+  max-width: 780px;
+  margin: 40px auto;
+  padding: 20px 10%;
+}
+
+/* ------ 푸터 영역 ------ */
+footer { 
+  padding: 60px 10%; 
+  border-top: 1px solid #333; 
+  margin-top: 40px; 
+}
+.footer-content { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: start;
+  gap: 30px; 
+}
+.footer-content a {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+  text-decoration: none;
+}
+.left {
+  flex-basis: 60%;
+}
+.center,
+.right {
+  flex-basis: 20%;  
+  vertical-align: top;
+}
+.col h2 { 
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 32px;
+  margin-bottom: 20px;
+}
+.col h3 {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 26px;
+  margin-bottom: 20px;
+}   
+.footer-nav { 
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 20px;
+  list-style: none;
+  margin-bottom: 40px; 
+}
+.footer-nav li:not(:last-child) {
+  padding-right: 20px;
+  border-right: 1px solid #eee;
+}
+.footer-info {
+  margin-top: 20px;
+  color: rgba(255, 255, 255, 0.7);
+}
+.socials {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 10px;
+  list-style: none;
+}
+.socials a {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+}
+.copyright {
+  margin-top: 20px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+} 
+.footer-content p {
+  font-size: 14px;
+  line-height: 0.6;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 20px;
+}
+
+/* ---- 반응형 (푸터) ---- */
+@media only screen and (max-width: 768px) {
+  .footer-content {
+    display: flex;
+    flex-direction: column;
+  }
+  .col {
+    flex-basis: 100%;
+  }
+  .col h2 {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+  .col h3 {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+}
+
+/* 모달 스타일 */
+.modal-overlay {
+  position: fixed; 
+  top: 0; left: 0; 
+  width: 100%; 
+  height: 100%;
+  background: rgba(0,0,0,0.85); 
+  display: flex; 
+  justify-content: center;
+  align-items: center; 
+  z-index: 1000; 
+  visibility: hidden; 
+  opacity: 0;
+  transition: 0.3s;
+}
+.modal-overlay.active { 
+  visibility: visible; 
+  opacity: 1; 
+}
+.modal-content {
+  background: #222; 
+  padding: 40px; 
+  border-radius: 10px; 
+  width: 100%;
+  max-width: 400px; 
+  position: relative; 
+  border: 1px solid #444;
+}
+.modal-content h2 { 
+  margin-bottom: 20px; 
+  text-align: center; 
+  color: #db0001; }
+.modal-content input {
+  width: 100%; 
+  padding: 12px; 
+  margin-bottom: 15px; 
+  border-radius: 4px;
+  border: 1px solid #444; 
+  background: #111; 
+  color: #fff; 
+  outline: none;
+}
+.modal-content .error-msg { 
+  color: #ff4d4d; 
+  font-size: 13px; 
+  margin-top: -10px; 
+  margin-bottom: 10px; 
+  min-height: 18px; }
+.modal-content .close-btn { 
+  position: absolute; 
+  top: 15px; right: 20px; 
+  font-size: 24px; 
+  cursor: pointer; 
+}
+.modal-content img {
+  width: 100%;
+  border-radius: 10px;
+}
+.modal-content img:hover{
+  transform: scale(1.05);
+}
+.submit-btn { 
+  width: 100%; 
+  background: #db0001; 
+  color: white; 
+  border: none; 
+  padding: 12px; 
+  border-radius: 4px; 
+  cursor: pointer; 
+  font-size: 16px; 
+}
+
+.header-content {  
+  position: absolute;  /* 절대 위치 */
+  left: 50%;  /* 왼쪽에서 50% */
+  top: 50%;   /* 위에서 50% */
+  transform: translate(-50%, -50%); /* 수직, 수평 가운데 정렬 */
+  text-align: center; 
+  width: 90%;
+}
+.header-content h2 { 
+  font-size: 60px;  /* 글자 크기 */
+  line-height: 1.4; /* 줄 높이 */
+  font-weight: 600; /* 글자 굵기 */
+  max-width: 650px;  /* 최대 너비 */
+  /* margin-bottom: 20px;  하단 마진 */
+  margin: 0 auto 20px;
+}
+.header-content h3 {
+  font-weight: 400;  /* 글자 굵기 */
+  margin-bottom: 40px;  /* 하단 마진 */
+}
+.add-email { 
+  background-color: #fff;  /* 배경색 */
+  border-radius: 4px;     /* 테두리 반경 */
+  margin-top: 30px;       /* 상단 마진 */
+  display: flex;     /* 플렉스 박스 레이아웃 사용 */
+  align-items: center;    /* 세로 정렬 */
+  overflow: hidden;       /* 오버플로우 숨김 */
+  max-width: 600px; 
+  margin-left: auto; 
+  margin-right: auto; 
+}
+.add-email input {   /* .add-email의 input 요소 */
+  border: 0;  /* 테두리 없음 */
+  outline: 0; /* 아웃라인 없음 */
+  flex: 1;  /* 플렉스 박스 아이템의 크기를 설정 */
+  margin-left: 20px; /* 왼쪽 마진 */
+  padding: 15px 0; 
+}
+.add-email button { 
+  border: 0; /* 테두리 없음 */
+  background-color: #db0001; /* 배경색 */
+  color: #fff; /* 글자색 */
+  font-size: 16px;  /* 글자 크기 */
+  padding: 15px 30px; /* 안쪽 여백 */
+  cursor: pointer;  /* 커서 포인터 */
+}
