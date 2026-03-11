@@ -50,7 +50,7 @@ if(vCount === null){
   vCount = 0;
 }
 
-vCountt++;
+vCount++;
 
 localStorage.setItem("visit", vCount);
 
@@ -228,4 +228,5 @@ if (logoutBtn) {
 }
 
 // 페이지가 처음 열릴 때 로그인 상태 확인하기
+
 window.onload = updateUI;
